@@ -8,6 +8,16 @@ const STREAMING_API = config.get('oanda.streamingApi');
 const ACCOUNT_ID = config.get('oanda.accountId');
 const ACCESS_TOKEN = config.get('oanda.accessToken');
 
+const socket = zmq.socket('pub');
+
+function init() {
+  socket.bindSync(config.get('mq.uri'));
+
+  // start streaming data
+  const INSTRUMENTS = config.get('data.instruments');
+  stream(INSTRUMENTS);
+}
+
 function stream(instruments) {
   const instrumentsParam = typeof instruments === 'string' ?
     instruments :
@@ -36,8 +46,15 @@ function stream(instruments) {
             const tick = tickObj.tick;
             tick.source = 'oanda';
             console.log(tick);
+
+            // publish tick in MQ
+            socket.send([
+              config.get('mq.topic'),
+              JSON.stringify(tick)
+            ]);
           }
         });
+
       } catch(err) {
         console.log('ERROR: ./index.js - parsing data');
         console.error(err);
@@ -45,6 +62,5 @@ function stream(instruments) {
     });
 }
 
-// start streaming data
-const INSTRUMENTS = config.get('data.instruments');
-stream(INSTRUMENTS);
+init();
+
