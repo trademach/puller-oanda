@@ -46,7 +46,9 @@ function stream(instruments) {
           if(tickObj.tick) {
             const tick = tickObj.tick;
             tick.source = 'oanda';
-            console.log(tick);
+            tick.time = new Date(tick.time);
+
+            console.log('received - ' + tick.instrument);
 
             // publish tick in MQ
             socket.send([
