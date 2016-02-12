@@ -4,10 +4,6 @@ const config = require('config');
 const zmq = require('zmq');
 const request = require('request');
 
-const STREAMING_API = config.get('oanda.streamingApi');
-const ACCOUNT_ID = config.get('oanda.accountId');
-const ACCESS_TOKEN = config.get('oanda.accessToken');
-
 const socket = zmq.socket('pub');
 
 function init() {
@@ -19,6 +15,11 @@ function init() {
 }
 
 function stream(instruments) {
+  // OANDA constants
+  const STREAMING_API = config.get('oanda.streamingApi');
+  const ACCOUNT_ID = config.get('oanda.accountId');
+  const ACCESS_TOKEN = config.get('oanda.accessToken');
+
   const instrumentsParam = typeof instruments === 'string' ?
     instruments :
     instruments.join(',');
