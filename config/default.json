@@ -6,8 +6,14 @@
     "accessToken": "cbb82a211e7517eaed318fd749ee832f-bb5035b694434022dcc5aeab345d8b73"
   },
   "mq": {
-    "uri": "tcp://127.0.0.1:8800",
-    "topic": "oanda"
+    "engine": {
+      "uri": "tcp://127.0.0.1:8800",
+      "topic": "oanda"
+    },
+    "saver": {
+      "uri": "tcp://127.0.0.1:8802",
+      "topic": "saver"
+    }
   },
   "data": {
     "instruments": [

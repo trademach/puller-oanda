@@ -10,10 +10,12 @@ const ACCOUNT_ID = config.get('oanda.accountId');
 const ACCESS_TOKEN = config.get('oanda.accessToken');
 const INSTRUMENTS = config.get('data.instruments');
 
-const socket = zmq.socket('pub');
+const socketEngine = zmq.socket('pub');
+const socketSaver = zmq.socket('pub');
 
 function init() {
-  socket.bindSync(config.get('mq.uri'));
+  socketEngine.connect(config.get('mq.engine.uri'));
+  socketSaver.connect(config.get('mq.saver.uri'));
 
   // start streaming data
   stream(INSTRUMENTS);
@@ -50,9 +52,14 @@ function stream(instruments) {
 
             console.log('received - ' + tick.instrument);
 
-            // publish tick in MQ
-            socket.send([
-              config.get('mq.topic'),
+            // send to engine
+            socketEngine.send([
+              config.get('mq.engine.topic'),
+              JSON.stringify(tick)
+            ]);
+            // send to saver
+            socketSaver.send([
+              config.get('mq.saver.topic'),
               JSON.stringify(tick)
             ]);
           }
